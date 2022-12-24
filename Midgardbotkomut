@@ -1,0 +1,120 @@
+import random
+import discord
+from discord.ext import commands
+import requests
+from bs4 import BeautifulSoup
+import os
+from dotenv import load_dotenv
+load_dotenv("discord//token.env")
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+
+
+@bot.event
+async def on_ready():
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(bot.guilds)} sunucuda")) 
+
+@commands.command()
+async def zekaolc(msg):
+    zeka_seviyesi = random.randint(0, 300)
+    if zeka_seviyesi <= 25:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Çok ağır düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 40:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Ağır düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 55:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Orta düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 70:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Hafif düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 85:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Sınır zekalı.")
+    elif zeka_seviyesi <= 115:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Normal zekalı.")
+    elif zeka_seviyesi <= 129:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Üstün zekalı.")
+    elif zeka_seviyesi <= 145:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Dahi.")
+    else:
+        await msg.send(f"{msg.author.mention} İq'un {zeka_seviyesi} Çok üstün zekalı.")
+@commands.command()
+async def arkadaslikolc(ctx, member: discord.Member):
+    arkadaslik_seviyesi = random.randint(0, 100)
+    if arkadaslik_seviyesi <=20:
+        await ctx.send(f"{ctx.author.mention} ile {member.mention} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 40:
+        await ctx.send(f"{ctx.author.mention} ile {member.mention} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 60:
+        await ctx.send(f"{ctx.author.mention} ile {member.mention} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 80:
+        await ctx.send(f"{ctx.author.mention} ile {member.mention} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 100:
+        await ctx.send(f"{ctx.author.mention} ile {member.mention} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+@commands.command()
+async def sorusor(ctx, *, soru):
+    soru = soru.replace(" ", "+")
+    url = f"https://www.google.com/search?q={soru}"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "html.parser")
+    cevap = soup.find("div", class_="BNeawe tAd8D AP7Wnd")
+    if cevap is None:
+        await ctx.send("Aradığınız sorunun cevabı bulunamadı.")
+    else:
+        cevap = cevap.text
+        cevap = cevap.strip()
+    if "porn" in cevap.lower() or "sex" in cevap.lower():
+        cevap = "Bulunamadı"
+    elif cevap == "":
+        cevap = "Bulunamadı"
+    await ctx.send(cevap)
+
+@commands.command()
+async def aktifsunucu(msg):
+    guilds = len(bot.guilds)
+    await msg.send(f"Bot {guilds} sunucuda aktif.")
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def ban(ctx, member: discord.Member, süre: int = 0, *, sebep: str = None):
+    if süre == 0:
+        süre_str = "süresiz"
+    else:
+        süre_str = f"{süre} gün"
+
+    if sebep is None:
+        sebep = "Belirtilmemiş"
+
+    await member.ban(reason=sebep)
+    await ctx.send(f"{member} adlı kullanıcı {süre_str} banlandı. Sebep: {sebep}")
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def kick(ctx, member: discord.Member, *, sebep: str = None):
+    if sebep is None:
+        sebep = "Belirtilmemiş"
+
+    await member.kick(reason=sebep)
+    await ctx.send(f"{member} adlı kullanıcı kicklendi. Sebep: {sebep}")
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def mute(ctx, member: discord.Member, süre: int = 0, *, sebep: str = None):
+    role = discord.utils.get(ctx.guild.roles, name="Muted")
+    if role is None:
+        role = await ctx.guild.create_role(name="Muted")
+
+    if süre == 0:
+        süre_str = "süresiz"
+    else:
+        süre_str = f"{süre} gün"
+
+    if sebep is None:
+        sebep = "Belirtilmemiş"
+
+    await member.add_roles(role, reason=sebep)
+    await ctx.send(f"{member} adlı kullanıcı {süre_str} susturuldu. Sebep: {sebep}")
+
+bot.add_command(arkadaslikolc)
+bot.add_command(zekaolc)
+bot.add_command(aktifsunucu)
+bot.add_command(sorusor)
+bot.run(os.environ.get("TOKEN"))

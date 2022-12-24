@@ -1,0 +1,84 @@
+import interactions
+import random
+import discord
+from discord.ext import commands
+import requests
+from bs4 import BeautifulSoup
+
+bot = interactions.Client(
+    token="MTA1NTE3ODkzMjA5OTQ4NTc0OA.GkOVoL.e46CDHbDIJsdH927LIzcJSgoTk5Kwu1PwVorWk",
+    default_scope=1056138209928695849,
+)
+@bot.command(
+    name="ara",
+    description="Soru sorun ve bot sizin için cevaplasın!",
+    options = [
+        interactions.Option(
+            name="text",
+            description="Mesajı gönder ve cevap al! Beta sürüm",
+            type=interactions.OptionType.STRING,
+            required=True,
+        ),
+    ],
+)
+async def sorusor(ctx: interactions.CommandContext, text: str):
+    soru = text.replace(" ", "+")
+    url = f"https://www.google.com/search?q={soru}"
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, "html.parser")
+    cevap = soup.find("div", class_="BNeawe tAd8D AP7Wnd")
+    if cevap is None:
+        await ctx.send("Aradığınız sorunun cevabı bulunamadı.")
+    else:
+        cevap = cevap.text
+        cevap = cevap.strip()
+    await ctx.send(f"{cevap}")
+
+@bot.command()
+async def zekaolc(ctx: interactions.CommandContext):
+    """Zeka Seviyeni Ölçer"""
+    zekaolc == "zekaolc"
+    zeka_seviyesi = random.randint(0, 300)
+    if zeka_seviyesi <= 25:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Çok ağır düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 40:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Ağır düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 55:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Orta düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 70:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Hafif düzey zihinsel yetersizlik.")
+    elif zeka_seviyesi <= 85:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Sınır zekalı.")
+    elif zeka_seviyesi <= 115:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Normal zekalı.")
+    elif zeka_seviyesi <= 129:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Üstün zekalı.")
+    elif zeka_seviyesi <= 145:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Dahi.")
+    elif zeka_seviyesi >= 145:
+        await ctx.send(f"{ctx.author.mention} İq'un {zeka_seviyesi} Çok üstün zekalı.")
+@bot.command(
+    name="arkadaslikolc",
+    description="Arkadaşın ile arkadaşlığını ölç",
+    options = [
+        interactions.Option(
+            name="user",
+            description="Lütfen bir arkadaşınızı etiketleyin",
+            type=interactions.OptionType.STRING,
+            required=True,
+        ),
+    ],
+)
+async def arkadaslikolc(ctx: interactions.CommandContext, user: discord.Member):
+    arkadaslik_seviyesi = random.randint(0, 100)
+    if arkadaslik_seviyesi <=20:
+        await ctx.send(f"{ctx.author.mention} ile {user} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 40:
+        await ctx.send(f"{ctx.author.mention} ile {user} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 60:
+        await ctx.send(f"{ctx.author.mention} ile {user} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 80:
+        await ctx.send(f"{ctx.author.mention} ile {user} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+    elif arkadaslik_seviyesi <= 100:
+        await ctx.send(f"{ctx.author.mention} ile {user} arkadaslık seviyeniz %{arkadaslik_seviyesi}")
+bot.start()
